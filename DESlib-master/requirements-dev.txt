@@ -1,0 +1,13 @@
+numpy>=1.17.0
+scipy>=1.4.0
+scikit-learn>=1.0.2
+sphinx
+sphinx_rtd_theme
+numpydoc
+pytest
+coverage
+pytest-cov
+pillow
+sphinx_gallery
+matplotlib>=2
+nose
