@@ -4,7 +4,6 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
 
 # Setting up the random state to have consistent results
 rng = np.random.RandomState(42)
