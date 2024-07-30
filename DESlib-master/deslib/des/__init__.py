@@ -5,7 +5,7 @@ algorithms (DES).
 
 from .base import BaseDES
 from .des_clustering import DESClustering
-from deslib.static.des_fh import DESFH
+from deslib.static.des_fh import EnsemblePruneFH
 from .des_knn import DESKNN
 from .des_mi import DESMI
 from .des_p import DESP
@@ -29,7 +29,7 @@ __all__ = ['BaseDES',
            'DESP',
            'DESKNN',
            'DESClustering',
-           'DESFH',
+           'EnsemblePruneFH',
            'DESMI',
            'BaseProbabilistic',
            'RRC',

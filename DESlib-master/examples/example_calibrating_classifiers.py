@@ -39,7 +39,7 @@ from deslib.des.des_p import DESP
 from deslib.des.knora_e import KNORAE
 from deslib.des.knora_u import KNORAU
 from deslib.des.meta_des import METADES
-from deslib.static.des_fh import DESFH
+from deslib.static.des_fh import EnsemblePruneFH
 
 ###############################################################################
 # Preparing the dataset
@@ -79,7 +79,7 @@ kne = KNORAE(pool_classifiers)
 desp = DESP(pool_classifiers)
 ola = OLA(pool_classifiers)
 mcb = MCB(pool_classifiers, random_state=rng)
-fh = DESFH(pool_classifiers)
+fh = EnsemblePruneFH(pool_classifiers)
 
 ###############################################################################
 # Calibrating base classifiers

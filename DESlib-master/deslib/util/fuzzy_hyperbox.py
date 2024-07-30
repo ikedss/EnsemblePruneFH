@@ -1,25 +1,34 @@
-# -*- coding: utf-8 -*-
-
 import numpy as np
 
 
 class Hyperbox:
-    def __init__(self, v=0, w=0, classifier=0, theta=.1, type=None):
+    def __init__(self, v, w, classifier, theta):
         self.Min = v
         self.Max = w
-        self.clsr = classifier
         self.Center = (v + w) / 2
-        self.type = type
-        # self.wCenter =(v+w)/2
+        self.classifier = classifier
         self.theta = theta
-        # self.samples=[]
-        # self.add_sample(v)
 
-    def expand(self, x):
-        self.Min = np.minimum(self.Min, x)
-        self.Max = np.maximum(self.Max, x)
+    def is_expandable(self, point):
+        return np.all(point >= self.Min - self.theta) and np.all(point <= self.Max + self.theta)
+
+    def expand(self, point):
+        self.Min = np.minimum(self.Min, point)
+        self.Max = np.maximum(self.Max, point)
         self.Center = (self.Min + self.Max) / 2
-        # self.add_sample(x)
+
+    def overlaps(self, other, overlap_threshold):
+        overlap_min = np.maximum(self.Min, other.Min)
+        overlap_max = np.minimum(self.Max, other.Max)
+        overlap_volume = np.prod(np.maximum(0, overlap_max - overlap_min))
+        self_volume = np.prod(self.Max - self.Min)
+        other_volume = np.prod(other.Max - other.Min)
+
+        if self_volume == 0 or other_volume == 0:
+            return False
+
+        return (overlap_volume / self_volume >= overlap_threshold) and (
+                    overlap_volume / other_volume >= overlap_threshold)
 
     def is_overlapped(self, box):
         minW = np.minimum(self.Max, box.Max)
@@ -58,8 +67,6 @@ class Hyperbox:
                         minOverlap = box.Max[n] - self.Min[n]
                         type = 2
                         dimOverlap = n
-
-
 
                 elif self.Min[n] <= box.Min[n] and box.Max[n] <= self.Max[n]:
                     m = min((box.Min[n] - self.Min[n]), (self.Max[n] - box.Max[n]))
@@ -175,4 +182,3 @@ class Hyperbox:
         if r * y >= 0:
             return r * y
         return 0
-#
