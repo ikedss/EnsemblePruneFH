@@ -1,10 +1,8 @@
 import numpy as np
-from sklearn.decomposition import PCA
 from deslib.static.base import BaseStaticEnsemble
 from deslib.util.fuzzy_hyperbox import Hyperbox
 import matplotlib.pyplot as plt
 
-# Define the modified EnsemblePruneFH class with plotting functionality
 class EnsemblePruneFH(BaseStaticEnsemble):
     def __init__(self, pool_classifiers=None, pct_classifiers=0.5, scoring=None, with_IH=False, safe_k=None,
                  IH_rate=0.30, random_state=None, DSEL_perc=0.5, HyperBoxes=[], theta=0.5, mu=0.991, n_jobs=-1,
@@ -83,7 +81,6 @@ class EnsemblePruneFH(BaseStaticEnsemble):
         majority_vote = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=predictions)
         return majority_vote
 
-    # Define the visualize_hyperboxes function
     def visualize_hyperboxes(self, data):
         fig = plt.figure()
         ax = fig.add_subplot(111)
