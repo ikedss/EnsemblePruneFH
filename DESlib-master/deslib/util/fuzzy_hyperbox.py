@@ -9,8 +9,13 @@ class Hyperbox:
         self.classifier = classifier
         self.theta = theta
 
-    def is_expandable(self, point):
-        return np.all(point >= self.Min - self.theta) and np.all(point <= self.Max + self.theta)
+    def is_expandable(self, x, theta=-1):
+        if theta == -1:
+            theta = self.theta
+        candidV = np.minimum(self.Min, x)
+        candidW = np.maximum(self.Max, x)
+
+        return all((candidW - candidV) < theta)
 
     def expand(self, point):
         self.Min = np.minimum(self.Min, point)
@@ -23,27 +28,15 @@ class Hyperbox:
         overlap_volume = np.prod(np.maximum(0, overlap_max - overlap_min))
         self_volume = np.prod(self.Max - self.Min)
         other_volume = np.prod(other.Max - other.Min)
-
         if self_volume == 0 or other_volume == 0:
             return False
-
         return (overlap_volume / self_volume >= overlap_threshold) and (
                     overlap_volume / other_volume >= overlap_threshold)
 
-    def is_overlapped(self, box):
-        minW = np.minimum(self.Max, box.Max)
-        maxV = np.maximum(self.Min, box.Min)
+    def is_overlapped(self, other):
+        minW = np.minimum(self.Max, other.Max)
+        maxV = np.maximum(self.Min, other.Min)
         return all(maxV < minW)
-
-    def will_overlap_accur(self, conBoxes, x):
-        candidV = np.minimum(self.Min, x)
-        candidW = np.maximum(self.Max, x)
-        for box in conBoxes:
-            minW = np.minimum(candidW, box.Max)
-            maxV = np.maximum(candidV, box.Min)
-            if all(maxV < minW):
-                return True
-        return False
 
     def contract(self, conBoxes):
         ndimension = len(self.Min)
@@ -101,45 +94,6 @@ class Hyperbox:
                     box.Min[dimOverlap] = self.Max[dimOverlap]
                 else:
                     box.Max[dimOverlap] = self.Min[dimOverlap]
-
-    def is_expandable(self, x, theta=-1):
-        if theta == -1:
-            theta = self.theta
-        candidV = np.minimum(self.Min, x)
-        candidW = np.maximum(self.Max, x)
-
-        return all((candidW - candidV) < theta)
-
-    def will_exceed_samples(self, x, con_samples):
-        candidV = np.minimum(self.Min, x)
-        candidW = np.maximum(self.Max, x)
-        no_features = len(self.Min)
-        V = candidV.reshape(1, no_features)
-        W = candidW.reshape(1, no_features)
-
-        return np.any(np.all(V <= con_samples, 1) & np.all(W >= con_samples, 1))
-
-    def contract_samplesBased(self, con_samples):
-        di = 0
-        v = self.Min
-        w = self.Max
-        mi = con_samples - v
-        ma = w - con_samples
-
-        inds1 = np.all(mi > 0, 1)
-        inds2 = np.all(ma > 0, 1)
-        confilicts_inds = np.where(inds1 & inds2)
-
-        for ind in list(confilicts_inds[0]):
-            if np.all(v < con_samples[ind]) and np.all(w > con_samples[ind]):
-                mi = con_samples[ind] - self.Min
-                ma = self.Max - con_samples[ind]
-                if min(mi) < min(ma):
-                    d = np.where(mi == min(mi))
-                    self.Min[d] = con_samples[ind, d]
-                else:
-                    d = np.where(ma == min(ma))
-                    self.Max[d] = con_samples[ind, d]
 
     def membership(self, x):
 

@@ -23,5 +23,3 @@ fh.fit(X_dsel, y_dsel)
 
 print('Evaluating DS technique:')
 print('Classification accuracy EnsemblePruneFH: ', fh.score(X_test, y_test))
-
-fh.visualize_hyperboxes(fh.DSEL_data_)

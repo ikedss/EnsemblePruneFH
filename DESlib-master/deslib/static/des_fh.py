@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.decomposition import PCA
 from deslib.static.base import BaseStaticEnsemble
 from deslib.util.fuzzy_hyperbox import Hyperbox
 import matplotlib.pyplot as plt
@@ -39,12 +38,10 @@ class EnsemblePruneFH(BaseStaticEnsemble):
     def fit(self, X, y):
         self.DSEL_data_ = X
         self.DSEL_target_ = y
-
         for clf in self.pool_classifiers:
             predictions = clf.predict(X)
             misclassified_indices = np.where(predictions != y)[0]
             self.setup_hyperboxes(misclassified_indices, clf)
-
         self.print_number_of_hyperboxes()
         self.count_overlapping_hyperboxes()
 
@@ -86,15 +83,3 @@ class EnsemblePruneFH(BaseStaticEnsemble):
         majority_vote = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=predictions)
         return majority_vote
 
-    def visualize_hyperboxes(self, data):
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        for box in self.HBoxes:
-            min_point = box.Min
-            max_point = box.Max
-            width = max_point[0] - min_point[0]
-            height = max_point[1] - min_point[1]
-            rect = plt.Rectangle(min_point, width, height, fill=False, edgecolor='r')
-            ax.add_patch(rect)
-        ax.scatter(data[:, 0], data[:, 1], c='b', marker='o')
-        plt.show()
