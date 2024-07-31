@@ -20,9 +20,8 @@ for clf in classifiers:
 
 fh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng)
 fh.fit(X_dsel, y_dsel)
-fh.count_overlapping_hyperboxes()
-fh.print_number_of_hyperboxes()
-fh.visualize_hyperboxes(fh.DSEL_data_)
 
 print('Evaluating DS technique:')
 print('Classification accuracy EnsemblePruneFH: ', fh.score(X_test, y_test))
+
+fh.visualize_hyperboxes(fh.DSEL_data_)

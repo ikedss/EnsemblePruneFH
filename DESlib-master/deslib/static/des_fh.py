@@ -1,7 +1,9 @@
 import numpy as np
+from sklearn.decomposition import PCA
 from deslib.static.base import BaseStaticEnsemble
 from deslib.util.fuzzy_hyperbox import Hyperbox
 import matplotlib.pyplot as plt
+
 
 class EnsemblePruneFH(BaseStaticEnsemble):
     def __init__(self, pool_classifiers=None, pct_classifiers=0.5, scoring=None, with_IH=False, safe_k=None,
@@ -25,6 +27,15 @@ class EnsemblePruneFH(BaseStaticEnsemble):
     def print_number_of_hyperboxes(self):
         print(f"Number of hyperboxes: {self.NO_hypeboxes}")
 
+    def count_overlapping_hyperboxes(self, overlap_threshold=0.5):
+        overlap_count = 0
+        for i in range(len(self.HBoxes)):
+            for j in range(i + 1, len(self.HBoxes)):
+                if self.HBoxes[i].overlaps(self.HBoxes[j], overlap_threshold):
+                    overlap_count += 1
+        print(f"Number of overlapping hyperboxes: {overlap_count}")
+        return overlap_count
+
     def fit(self, X, y):
         self.DSEL_data_ = X
         self.DSEL_target_ = y
@@ -33,6 +44,9 @@ class EnsemblePruneFH(BaseStaticEnsemble):
             predictions = clf.predict(X)
             misclassified_indices = np.where(predictions != y)[0]
             self.setup_hyperboxes(misclassified_indices, clf)
+
+        self.print_number_of_hyperboxes()
+        self.count_overlapping_hyperboxes()
 
     def setup_hyperboxes(self, samples_ind, classifier):
         if np.size(samples_ind) < 1:
@@ -66,15 +80,6 @@ class EnsemblePruneFH(BaseStaticEnsemble):
                 boxes.append(b)
                 self.NO_hypeboxes += 1
         self.HBoxes.extend(boxes)
-
-    def count_overlapping_hyperboxes(self, overlap_threshold=0.5):
-        overlap_count = 0
-        for i in range(len(self.HBoxes)):
-            for j in range(i + 1, len(self.HBoxes)):
-                if self.HBoxes[i].overlaps(self.HBoxes[j], overlap_threshold):
-                    overlap_count += 1
-        print(f"Number of overlapping hyperboxes: {overlap_count}")
-        return overlap_count
 
     def predict(self, X):
         predictions = np.asarray([clf.predict(X) for clf in self.pool_classifiers])

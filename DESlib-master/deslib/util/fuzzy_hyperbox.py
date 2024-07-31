@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Hyperbox:
     def __init__(self, v, w, classifier, theta):
         self.Min = v
