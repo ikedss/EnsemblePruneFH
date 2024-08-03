@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 class EnsemblePruneFH(BaseStaticEnsemble):
     def __init__(self, pool_classifiers=None, pct_classifiers=0.5, scoring=None, with_IH=False, safe_k=None,
                  IH_rate=0.30, random_state=None, DSEL_perc=0.5, HyperBoxes=[], theta=0.5, mu=0.991, n_jobs=-1,
-                 mis_sample_based=True):
+                 mis_sample_based=True, overlap_threshold=0.5):
         self.theta = theta
         self.mu = mu
         self.mis_sample_based = mis_sample_based
         self.HBoxes = []
         self.NO_hypeboxes = 0
+        self.overlap_threshold = overlap_threshold
         super(EnsemblePruneFH, self).__init__(pool_classifiers=pool_classifiers,
                                               with_IH=with_IH,
                                               safe_k=safe_k,
@@ -26,11 +27,11 @@ class EnsemblePruneFH(BaseStaticEnsemble):
     def print_number_of_hyperboxes(self):
         print(f"Number of hyperboxes: {self.NO_hypeboxes}")
 
-    def count_overlapping_hyperboxes(self, overlap_threshold=0.5):
+    def count_overlapping_hyperboxes(self):
         overlap_count = 0
         for i in range(len(self.HBoxes)):
             for j in range(i + 1, len(self.HBoxes)):
-                if self.HBoxes[i].overlaps(self.HBoxes[j], overlap_threshold):
+                if self.HBoxes[i].overlaps(self.HBoxes[j], self.overlap_threshold):
                     overlap_count += 1
         print(f"Number of overlapping hyperboxes: {overlap_count}")
         return overlap_count
@@ -82,4 +83,3 @@ class EnsemblePruneFH(BaseStaticEnsemble):
         predictions = np.asarray([clf.predict(X) for clf in self.pool_classifiers])
         majority_vote = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=predictions)
         return majority_vote
-
