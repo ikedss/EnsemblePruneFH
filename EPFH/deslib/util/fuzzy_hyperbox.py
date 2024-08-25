@@ -14,7 +14,6 @@ class Hyperbox:
             theta = self.theta
         candidV = np.minimum(self.Min, x)
         candidW = np.maximum(self.Max, x)
-
         return all((candidW - candidV) < theta)
 
     def expand(self, point):
@@ -96,7 +95,6 @@ class Hyperbox:
                     box.Max[dimOverlap] = self.Min[dimOverlap]
 
     def membership(self, x):
-
         disvec = np.abs(self.Center - x)
         halfsize = (self.Max - self.Min) / 2
         d = disvec - halfsize
