@@ -1,5 +1,5 @@
 """
-The :mod:`deslib.static` provides a set of static ensemble methods which are
+The :mod:deslib.static provides a set of static ensemble methods which are
 often used as a baseline to compare the performance of dynamic selection
 algorithms.
 """
@@ -9,9 +9,11 @@ from .single_best import SingleBest
 from .static_selection import StaticSelection
 from .stacked import StackedClassifier
 from .epfh import EnsemblePruneFH
+from .des_fh import DESFH
 
-__all__ = ['Oracle',
-           'SingleBest',
-           'StaticSelection',
-           'StackedClassifier',
-           'EnsemblePruneFH']
+__all = ['Oracle',
+         'SingleBest',
+         'StaticSelection',
+         'StackedClassifier',
+         'EnsemblePruneFH',
+         'DESFH']
