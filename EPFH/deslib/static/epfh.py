@@ -2,17 +2,17 @@ import numpy as np
 from deslib.static.base import BaseStaticEnsemble
 from deslib.util.fuzzy_hyperbox import Hyperbox
 
-
 class EnsemblePruneFH(BaseStaticEnsemble):
     def __init__(self, pool_classifiers=None, with_IH=False, safe_k=None,
                  IH_rate=0.30, random_state=None, DSEL_perc=0.5, theta=0.5, mu=0.991, n_jobs=-1,
-                 mis_sample_based=True, overlap_threshold=0.5):
+                 mis_sample_based=True, overlap_threshold=0.2, threshold_remove=0.028):
         self.theta = theta
         self.mu = mu
         self.mis_sample_based = mis_sample_based
         self.HBoxes = []
         self.NO_hypeboxes = 0
         self.overlap_threshold = overlap_threshold
+        self.threshold_remove = threshold_remove
         super(EnsemblePruneFH, self).__init__(pool_classifiers=pool_classifiers,
                                               with_IH=with_IH,
                                               safe_k=safe_k,
@@ -27,14 +27,28 @@ class EnsemblePruneFH(BaseStaticEnsemble):
     def print_number_of_hyperboxes(self):
         print(f"Number of hyperboxes: {self.NO_hypeboxes}")
 
-    def count_overlapping_hyperboxes(self):
-        overlap_count = 0
-        for i in range(len(self.HBoxes)):
-            for j in range(i + 1, len(self.HBoxes)):
-                if self.HBoxes[i].overlaps(self.HBoxes[j], self.overlap_threshold):
-                    overlap_count += 1
-        print(f"Number of overlapping hyperboxes: {overlap_count}")
-        return overlap_count
+    def prune_classifiers_hyperboxes(self):
+        to_remove = []
+        overlap_ratios = {}
+        for clf in self.pool_classifiers:
+            hyperboxes = [hb for hb in self.HBoxes if hb.classifier == clf]
+            num_hyperboxes = len(hyperboxes)
+            num_overlaps = 0
+            for i in range(num_hyperboxes):
+                for j in range(i + 1, num_hyperboxes):
+                    if hyperboxes[i].overlaps(hyperboxes[j], self.overlap_threshold):
+                        num_overlaps += 1
+            overlap_ratio = num_overlaps / num_hyperboxes
+            #print(overlap_ratio)
+            overlap_ratios[clf] = overlap_ratio
+            if overlap_ratio >= self.threshold_remove:
+                to_remove.append(clf)
+        if len(to_remove) == len(self.pool_classifiers):
+            lowest_ratio_clf = min(overlap_ratios, key=overlap_ratios.get)
+            to_remove.remove(lowest_ratio_clf)
+            print("All classifiers surpassed the threshold, the lowest ratio classifier was kept")
+        self.pool_classifiers = [clf for clf in self.pool_classifiers if clf not in to_remove]
+        print(f'Classifiers removed: {len(to_remove)}')
 
     def fit(self, X, y):
         self.DSEL_data_ = X
@@ -43,8 +57,7 @@ class EnsemblePruneFH(BaseStaticEnsemble):
             predictions = clf.predict(X)
             misclassified_indices = np.where(predictions != y)[0]
             self.setup_hyperboxes(misclassified_indices, clf)
-        self.print_number_of_hyperboxes()
-        self.count_overlapping_hyperboxes()
+        self.prune_classifiers_hyperboxes()
 
     def setup_hyperboxes(self, samples_ind, classifier):
         if np.size(samples_ind) < 1:
