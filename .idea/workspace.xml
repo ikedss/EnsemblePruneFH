@@ -4,104 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="New functions for EPFH and FH-DES added.">
-      <change afterPath="$PROJECT_DIR$/Bases/adult/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/adult/adult.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/adult/adult.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/adult/adult.test" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/adult/old.adult.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/blood+transfusion+service+center/transfusion.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/blood+transfusion+service+center/transfusion.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/breast+cancer+wisconsin+diagnostic/wdbc.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/breast+cancer+wisconsin+diagnostic/wdbc.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/cardiotocography/CTG.xls" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/connectionist+bench+sonar+mines+vs+rocks/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/connectionist+bench+sonar+mines+vs+rocks/sonar.all-data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/connectionist+bench+sonar+mines+vs+rocks/sonar.mines" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/connectionist+bench+sonar+mines+vs+rocks/sonar.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/connectionist+bench+sonar+mines+vs+rocks/sonar.rocks" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/ecoli/ecoli.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/ecoli/ecoli.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/glass+identification/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/glass+identification/glass.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/glass+identification/glass.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/glass+identification/glass.tag" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/haberman+s+survival/haberman.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/haberman+s+survival/haberman.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/ilpd+indian+liver+patient+dataset/Indian Liver Patient Dataset (ILPD).csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/ionosphere/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/ionosphere/ionosphere.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/ionosphere/ionosphere.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/laryngeal1.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/laryngeal3.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/bupa.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/bupa.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/costs/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/costs/bupa-liver.README" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/costs/bupa-liver.cost" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/costs/bupa-liver.delay" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/costs/bupa-liver.expense" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/costs/bupa-liver.group" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/liver+disorders/noteDuplicates.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/magic+gamma+telescope/magic04.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/magic+gamma+telescope/magic04.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/mammographic+mass/mammographic_masses.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/mammographic+mass/mammographic_masses.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/monks-1.test" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/monks-1.train" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/monks-2.test" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/monks-2.train" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/monks-3.test" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/monks-3.train" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/monks.names" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/thrun.comparison.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/thrun.comparison.ps.Z" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/monk+s+problems/update" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/pima.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+german+credit+data/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+german+credit+data/german.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+german+credit+data/german.data-numeric" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+german+credit+data/german.doc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+heart/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+heart/heart.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+heart/heart.doc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+landsat+satellite/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+landsat+satellite/sat.doc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+landsat+satellite/sat.trn" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+landsat+satellite/sat.tst" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/vehicle.doc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xaa.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xab.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xac.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xad.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xae.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xaf.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xag.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xah.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/statlog+vehicle+silhouettes/xai.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/steel+plates+faults/Faults.NNA" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/steel+plates+faults/Faults27x7_var" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/vertebral+column/column_2C.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/vertebral+column/column_2C_weka.arff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/vertebral+column/column_3C.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/vertebral+column/column_3C_weka.arff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/weaning.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/wine/Index" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/wine/wine.data" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Bases/wine/wine.names" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/EPFH.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/EPFH.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="cleaning files">
+      <change afterPath="$PROJECT_DIR$/EPFH/examples/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EPFH/deslib/static/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/deslib/static/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/EPFH/deslib/util/fuzzy_hyperbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/deslib/util/fuzzy_hyperbox.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EPFH/examples/simple_example.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -126,17 +44,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.simple_example.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "Merging master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "/home/ikeds/PycharmProjects/EnsemblePruneFH/venv/lib/python3.11/site-packages",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.simple_example.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/ikeds/PycharmProjects/EnsemblePruneFH/venv/lib/python3.11/site-packages&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/venv/lib/python3.11/site-packages" />
@@ -174,12 +93,20 @@
       <option name="project" value="LOCAL" />
       <updated>1722653744898</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="cleaning files">
+      <option name="closed" value="true" />
+      <created>1724613055699</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1724613055699</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="cleaning files" />
     <MESSAGE value="New functions for EPFH and FH-DES added." />
-    <option name="LAST_COMMIT_MESSAGE" value="New functions for EPFH and FH-DES added." />
+    <MESSAGE value="cleaning files" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleaning files" />
   </component>
 </project>
