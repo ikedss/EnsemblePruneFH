@@ -77,7 +77,7 @@ def process_datasets(dataframes, random_seed):
         des.fit(X_val, y_val)
         endDESFH = time.time()
 
-        fh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng, overlap_threshold=0, threshold_remove=0.1)
+        fh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng, overlap_threshold=0, threshold_remove=1)
         startPrune = time.time()
         fh.fit(X_val, y_val)
         endPrune = time.time()
@@ -102,10 +102,10 @@ for seed in seed_list:
     results = process_datasets(dataframes, random_seed=seed)
     all_results.append(results)
 
-for run_idx, results in enumerate(all_results):
-    print(f"Run {run_idx + 1}")
+for run, results in enumerate(all_results):
+    print(f"\nRun {run + 1}")
     for result in results:
-        print(f"Results for dataset: {result['dataset']}")
+        print(f"\nResults for dataset: {result['dataset']}")
         print(f"BaggingClassifier accuracy: {result['BaggingClassifier_accuracy']}")
         print(f"BaggingClassifier time: {result['BaggingClassifier_time']}")
         print(f"StaticSelection accuracy: {result['StaticSelection_accuracy']}")

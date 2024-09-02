@@ -2,10 +2,11 @@ import numpy as np
 from deslib.static.base import BaseStaticEnsemble
 from deslib.util.fuzzy_hyperbox import Hyperbox
 
+
 class EnsemblePruneFH(BaseStaticEnsemble):
     def __init__(self, pool_classifiers=None, with_IH=False, safe_k=None,
                  IH_rate=0.30, random_state=None, DSEL_perc=0.5, theta=0.5, mu=0.991, n_jobs=-1,
-                 mis_sample_based=True, overlap_threshold=0.2, threshold_remove=0.028):
+                 mis_sample_based=True, overlap_threshold=0.2, threshold_remove=0.01):
         self.theta = theta
         self.mu = mu
         self.mis_sample_based = mis_sample_based
@@ -24,9 +25,6 @@ class EnsemblePruneFH(BaseStaticEnsemble):
         if self.pool_classifiers is None:
             raise ValueError("pool_classifiers cannot be None")
 
-    def print_number_of_hyperboxes(self):
-        print(f"Number of hyperboxes: {self.NO_hypeboxes}")
-
     def prune_classifiers_hyperboxes(self):
         to_remove = []
         overlap_ratios = {}
@@ -39,7 +37,7 @@ class EnsemblePruneFH(BaseStaticEnsemble):
                     if hyperboxes[i].overlaps(hyperboxes[j], self.overlap_threshold):
                         num_overlaps += 1
             overlap_ratio = num_overlaps / num_hyperboxes
-            #print(overlap_ratio)
+            #print(num_overlaps, num_hyperboxes)
             overlap_ratios[clf] = overlap_ratio
             if overlap_ratio >= self.threshold_remove:
                 to_remove.append(clf)
