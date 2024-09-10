@@ -18,7 +18,7 @@ class EnsemblePruneFH(BaseStaticEnsemble):
                                               with_IH=with_IH,
                                               safe_k=safe_k,
                                               IH_rate=IH_rate,
-                                              mode='hybrid',  # hybrid, weighting
+                                              mode='hybrid',
                                               random_state=random_state,
                                               DSEL_perc=DSEL_perc,
                                               n_jobs=n_jobs)
@@ -28,6 +28,7 @@ class EnsemblePruneFH(BaseStaticEnsemble):
     def prune_classifiers_hyperboxes(self):
         to_remove = []
         overlap_ratios = {}
+
         for clf in self.pool_classifiers:
             hyperboxes = [hb for hb in self.HBoxes if hb.classifier == clf]
             num_hyperboxes = len(hyperboxes)
@@ -36,8 +37,8 @@ class EnsemblePruneFH(BaseStaticEnsemble):
                 for j in range(i + 1, num_hyperboxes):
                     if hyperboxes[i].overlaps(hyperboxes[j], self.overlap_threshold):
                         num_overlaps += 1
-            overlap_ratio = num_overlaps / num_hyperboxes
-            #print(num_overlaps, num_hyperboxes)
+            overlap_ratio = num_overlaps / num_hyperboxes if num_hyperboxes > 0 else 0
+            #print(overlap_ratio, num_overlaps, num_hyperboxes)
             overlap_ratios[clf] = overlap_ratio
             if overlap_ratio >= self.threshold_remove:
                 to_remove.append(clf)
@@ -46,7 +47,7 @@ class EnsemblePruneFH(BaseStaticEnsemble):
             to_remove.remove(lowest_ratio_clf)
             print("All classifiers surpassed the threshold, the lowest ratio classifier was kept")
         self.pool_classifiers = [clf for clf in self.pool_classifiers if clf not in to_remove]
-        print(f'Classifiers removed: {len(to_remove)}')
+        #print(f'Classifiers removed: {len(to_remove)}')
 
     def fit(self, X, y):
         self.DSEL_data_ = X

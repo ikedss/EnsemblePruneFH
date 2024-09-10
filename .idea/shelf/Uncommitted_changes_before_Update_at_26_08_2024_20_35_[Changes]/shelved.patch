@@ -1,0 +1,273 @@
+Index: EPFH/examples/simple_example.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import numpy as np\nfrom deslib.static.epfh import EnsemblePruneFH\nfrom sklearn.datasets import make_classification\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.decomposition import PCA\n\nrng = np.random.RandomState(42)\nX, y = make_classification(n_samples=1000, random_state=rng)\n\npca = PCA(n_components=2)\nX_reduced = pca.fit_transform(X)\n\nX_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.33, random_state=rng)\nX_train, X_dsel, y_train, y_dsel = train_test_split(X_train, y_train, test_size=0.5, random_state=rng)\n\nclassifiers = [RandomForestClassifier(n_estimators=10, random_state=rng) for _ in range(5)]\nfor clf in classifiers:\n    clf.fit(X_train, y_train)\n\nfh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng)\nfh.fit(X_dsel, y_dsel)\n\nprint('Evaluating DS technique:')\nprint('Classification accuracy EnsemblePruneFH: ', fh.score(X_test, y_test))\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/EPFH/examples/simple_example.py b/EPFH/examples/simple_example.py
+--- a/EPFH/examples/simple_example.py	(revision 22f45bc2a749b83522f34c20a18a45b89abed4d1)
++++ b/EPFH/examples/simple_example.py	(date 1724278543591)
+@@ -1,12 +1,17 @@
+ import numpy as np
+ from deslib.static.epfh import EnsemblePruneFH
++from deslib.static.des_fh import DESFH
++from deslib.static.static_selection import StaticSelection
++from deslib.static.stacked import StackedClassifier
+ from sklearn.datasets import make_classification
+ from sklearn.model_selection import train_test_split
+ from sklearn.ensemble import RandomForestClassifier
++from sklearn.ensemble import BaggingClassifier
+ from sklearn.decomposition import PCA
++import time
+ 
+ rng = np.random.RandomState(42)
+-X, y = make_classification(n_samples=1000, random_state=rng)
++X, y = make_classification(n_samples=5000, random_state=rng)
+ 
+ pca = PCA(n_components=2)
+ X_reduced = pca.fit_transform(X)
+@@ -14,12 +19,46 @@
+ X_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.33, random_state=rng)
+ X_train, X_dsel, y_train, y_dsel = train_test_split(X_train, y_train, test_size=0.5, random_state=rng)
+ 
+-classifiers = [RandomForestClassifier(n_estimators=10, random_state=rng) for _ in range(5)]
+-for clf in classifiers:
+-    clf.fit(X_train, y_train)
++#classifiers = [RandomForestClassifier(n_estimators=50, random_state=rng) for _ in range(50)]
++#for clf in classifiers:
++#    clf.fit(X_train, y_train)
++classifiers = BaggingClassifier(n_estimators=50, random_state=rng)
++startBaggingClassifier = time.time()
++classifiers.fit(X_train, y_train)
++endBaggingClassifier = time.time()
++
++#sc = StackedClassifier(pool_classifiers=classifiers, random_state=rng)
++#startStackedClassifier = time.time()
++#sc.fit(X_dsel, y_dsel)
++#endStackedClassifier = time.time()
++
++ss = StaticSelection(pool_classifiers=classifiers, random_state=rng)
++startStaticSelection = time.time()
++ss.fit(X_dsel, y_dsel)
++endStaticSelection = time.time()
++
++des = DESFH(pool_classifiers=classifiers, random_state=rng)
++startDESFH = time.time()
++des.fit(X_dsel, y_dsel)
++endDESFH = time.time()
+ 
+ fh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng)
++startPrune = time.time()
+ fh.fit(X_dsel, y_dsel)
++endPrune = time.time()
+ 
+ print('Evaluating DS technique:')
++print('Classification accuracy BaggingClassifier: ', classifiers.score(X_test, y_test))
++print('Time Bagging: ', endBaggingClassifier - startBaggingClassifier)
++
++#print('Classification accuracy StackedClassifier: ', sc.score(X_test, y_test))
++#print('Time StackedClassifier: ', endStackedClassifier - startStackedClassifier)
++
++print('Classification accuracy StaticSelection: ', ss.score(X_test, y_test))
++print('Time StaticSelection: ', endStaticSelection - startStaticSelection)
++
++print('Classification accuracy DESFH: ', des.score(X_test, y_test))
++print('Time DESFH: ', endDESFH - startDESFH)
++
+ print('Classification accuracy EnsemblePruneFH: ', fh.score(X_test, y_test))
++print('Time EnsemblePruneFH: ', endPrune - startPrune)
+Index: EPFH/deslib/static/epfh.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import numpy as np\nfrom deslib.static.base import BaseStaticEnsemble\nfrom deslib.util.fuzzy_hyperbox import Hyperbox\n\n\nclass EnsemblePruneFH(BaseStaticEnsemble):\n    def __init__(self, pool_classifiers=None, with_IH=False, safe_k=None,\n                 IH_rate=0.30, random_state=None, DSEL_perc=0.5, theta=0.5, mu=0.991, n_jobs=-1,\n                 mis_sample_based=True, overlap_threshold=0.5):\n        self.theta = theta\n        self.mu = mu\n        self.mis_sample_based = mis_sample_based\n        self.HBoxes = []\n        self.NO_hypeboxes = 0\n        self.overlap_threshold = overlap_threshold\n        super(EnsemblePruneFH, self).__init__(pool_classifiers=pool_classifiers,\n                                              with_IH=with_IH,\n                                              safe_k=safe_k,\n                                              IH_rate=IH_rate,\n                                              mode='hybrid',  # hybrid, weighting\n                                              random_state=random_state,\n                                              DSEL_perc=DSEL_perc,\n                                              n_jobs=n_jobs)\n        if self.pool_classifiers is None:\n            raise ValueError(\"pool_classifiers cannot be None\")\n\n    def print_number_of_hyperboxes(self):\n        print(f\"Number of hyperboxes: {self.NO_hypeboxes}\")\n\n    def count_overlapping_hyperboxes(self):\n        overlap_count = 0\n        for i in range(len(self.HBoxes)):\n            for j in range(i + 1, len(self.HBoxes)):\n                if self.HBoxes[i].overlaps(self.HBoxes[j], self.overlap_threshold):\n                    overlap_count += 1\n        print(f\"Number of overlapping hyperboxes: {overlap_count}\")\n        return overlap_count\n\n    def fit(self, X, y):\n        self.DSEL_data_ = X\n        self.DSEL_target_ = y\n        for clf in self.pool_classifiers:\n            predictions = clf.predict(X)\n            misclassified_indices = np.where(predictions != y)[0]\n            self.setup_hyperboxes(misclassified_indices, clf)\n        self.print_number_of_hyperboxes()\n        self.count_overlapping_hyperboxes()\n\n    def setup_hyperboxes(self, samples_ind, classifier):\n        if np.size(samples_ind) < 1:\n            return\n        boxes = []\n        selected_samples = self.DSEL_data_[samples_ind, :]\n        for X in selected_samples:\n            if len(boxes) < 1:\n                b = Hyperbox(v=X, w=X, classifier=classifier, theta=self.theta)\n                self.NO_hypeboxes += 1\n                boxes.append(b)\n                continue\n            IsInBox = False\n            for box in boxes:\n                if np.all(box.Min <= X) and np.all(box.Max >= X):\n                    IsInBox = True\n                    break\n            if IsInBox:\n                continue\n            nDist = np.inf\n            nearest_box = None\n            for box in boxes:\n                dist = np.linalg.norm(X - box.Center)\n                if dist < nDist:\n                    nearest_box = box\n                    nDist = dist\n            if nearest_box.is_expandable(X):\n                nearest_box.expand(X)\n            else:\n                b = Hyperbox(v=X, w=X, classifier=classifier, theta=self.theta)\n                boxes.append(b)\n                self.NO_hypeboxes += 1\n        self.HBoxes.extend(boxes)\n\n    def predict(self, X):\n        predictions = np.asarray([clf.predict(X) for clf in self.pool_classifiers])\n        majority_vote = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=predictions)\n        return majority_vote\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/EPFH/deslib/static/epfh.py b/EPFH/deslib/static/epfh.py
+--- a/EPFH/deslib/static/epfh.py	(revision 22f45bc2a749b83522f34c20a18a45b89abed4d1)
++++ b/EPFH/deslib/static/epfh.py	(date 1724279336625)
+@@ -2,17 +2,17 @@
+ from deslib.static.base import BaseStaticEnsemble
+ from deslib.util.fuzzy_hyperbox import Hyperbox
+ 
+-
+ class EnsemblePruneFH(BaseStaticEnsemble):
+     def __init__(self, pool_classifiers=None, with_IH=False, safe_k=None,
+                  IH_rate=0.30, random_state=None, DSEL_perc=0.5, theta=0.5, mu=0.991, n_jobs=-1,
+-                 mis_sample_based=True, overlap_threshold=0.5):
++                 mis_sample_based=True, overlap_threshold=0.2, threshold_remove=0.028):
+         self.theta = theta
+         self.mu = mu
+         self.mis_sample_based = mis_sample_based
+         self.HBoxes = []
+         self.NO_hypeboxes = 0
+         self.overlap_threshold = overlap_threshold
++        self.threshold_remove = threshold_remove
+         super(EnsemblePruneFH, self).__init__(pool_classifiers=pool_classifiers,
+                                               with_IH=with_IH,
+                                               safe_k=safe_k,
+@@ -27,14 +27,46 @@
+     def print_number_of_hyperboxes(self):
+         print(f"Number of hyperboxes: {self.NO_hypeboxes}")
+ 
+-    def count_overlapping_hyperboxes(self):
+-        overlap_count = 0
+-        for i in range(len(self.HBoxes)):
+-            for j in range(i + 1, len(self.HBoxes)):
+-                if self.HBoxes[i].overlaps(self.HBoxes[j], self.overlap_threshold):
+-                    overlap_count += 1
+-        print(f"Number of overlapping hyperboxes: {overlap_count}")
+-        return overlap_count
++    def prune_classifiers(self):
++        to_remove = []
++        for i, clf1 in enumerate(self.pool_classifiers):
++            for clf2 in self.pool_classifiers[i + 1:]:
++                num_overlaps = 0
++                for hb1 in [hb for hb in self.HBoxes if hb.classifier == clf1]:
++                    for hb2 in [hb for hb in self.HBoxes if hb.classifier == clf2]:
++                        if hb1.overlaps(hb2, self.overlap_threshold):
++                            num_overlaps += 1
++                overlap_ratio = num_overlaps / (len([hb for hb in self.HBoxes if hb.classifier == clf1]) *
++                                                len([hb for hb in self.HBoxes if hb.classifier == clf2]))
++                #print(f'overlap_ratio = {overlap_ratio}')
++                if overlap_ratio >= self.threshold_remove:
++                    to_remove.append(clf1)
++                    break
++        print(f'Classifiers to remove: {len(to_remove)}')
++        self.pool_classifiers = [clf for clf in self.pool_classifiers if clf not in to_remove]
++
++    def prune_classifiers_hyperboxes(self):
++        to_remove = []
++        overlap_ratios = {}
++        for clf in self.pool_classifiers:
++            hyperboxes = [hb for hb in self.HBoxes if hb.classifier == clf]
++            num_hyperboxes = len(hyperboxes)
++            num_overlaps = 0
++            for i in range(num_hyperboxes):
++                for j in range(i + 1, num_hyperboxes):
++                    if hyperboxes[i].overlaps(hyperboxes[j], self.overlap_threshold):
++                        num_overlaps += 1
++            overlap_ratio = num_overlaps / num_hyperboxes
++            #print(overlap_ratio)
++            overlap_ratios[clf] = overlap_ratio
++            if overlap_ratio >= self.threshold_remove:
++                to_remove.append(clf)
++        if len(to_remove) == len(self.pool_classifiers):
++            lowest_ratio_clf = min(overlap_ratios, key=overlap_ratios.get)
++            to_remove.remove(lowest_ratio_clf)
++            print("All classifiers surpassed the threshold, the lowest ratio classifier was kept")
++        self.pool_classifiers = [clf for clf in self.pool_classifiers if clf not in to_remove]
++        print(f'Classifiers removed: {len(to_remove)}')
+ 
+     def fit(self, X, y):
+         self.DSEL_data_ = X
+@@ -43,8 +75,7 @@
+             predictions = clf.predict(X)
+             misclassified_indices = np.where(predictions != y)[0]
+             self.setup_hyperboxes(misclassified_indices, clf)
+-        self.print_number_of_hyperboxes()
+-        self.count_overlapping_hyperboxes()
++        self.prune_classifiers_hyperboxes()
+ 
+     def setup_hyperboxes(self, samples_ind, classifier):
+         if np.size(samples_ind) < 1:
+@@ -83,3 +114,4 @@
+         predictions = np.asarray([clf.predict(X) for clf in self.pool_classifiers])
+         majority_vote = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=predictions)
+         return majority_vote
++    
+\ No newline at end of file
+Index: EPFH/deslib/static/__init__.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\"\"\"\nThe :mod:`deslib.static` provides a set of static ensemble methods which are\noften used as a baseline to compare the performance of dynamic selection\nalgorithms.\n\"\"\"\n\nfrom .oracle import Oracle\nfrom .single_best import SingleBest\nfrom .static_selection import StaticSelection\nfrom .stacked import StackedClassifier\nfrom .epfh import EnsemblePruneFH\n\n__all__ = ['Oracle',\n           'SingleBest',\n           'StaticSelection',\n           'StackedClassifier',\n           'EnsemblePruneFH']\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/EPFH/deslib/static/__init__.py b/EPFH/deslib/static/__init__.py
+--- a/EPFH/deslib/static/__init__.py	(revision 22f45bc2a749b83522f34c20a18a45b89abed4d1)
++++ b/EPFH/deslib/static/__init__.py	(date 1724188608348)
+@@ -9,9 +9,11 @@
+ from .static_selection import StaticSelection
+ from .stacked import StackedClassifier
+ from .epfh import EnsemblePruneFH
++from .des_fh import DESFH
+ 
+ __all__ = ['Oracle',
+            'SingleBest',
+            'StaticSelection',
+            'StackedClassifier',
+-           'EnsemblePruneFH']
++           'EnsemblePruneFH',
++           'DESFH']
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"feef8468-869a-4805-9fc6-5b7cce196188\" name=\"Changes\" comment=\"cleaning files\">\n      <change afterPath=\"$PROJECT_DIR$/.idea/EPFH.iml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/modules.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/vcs.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/__init__.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/base.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/epfh.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/oracle.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/single_best.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/stacked.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/static_selection.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/__init__.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/aggregation.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/datasets.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/dfp.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/diversity.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/diversity_batch.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/faiss_knn_wrapper.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/fuzzy_hyperbox.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/instance_hardness.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/knne.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/deslib/util/prob_functions.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/EPFH/examples/simple_example.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;ikedss&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/ikedss/EnsemblePruneFH.git&quot;,\n    &quot;accountId&quot;: &quot;6264a094-315a-4196-88e0-3e6fc70ed72a&quot;\n  }\n}</component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 3\n}</component>\n  <component name=\"ProjectId\" id=\"2k81dd3nB1DYFF32HKCBwSQkQ5V\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"Python.simple_example.executor\": \"Run\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\n    \"git-widget-placeholder\": \"master\",\n    \"ignore.virus.scanning.warn.message\": \"true\",\n    \"last_opened_file_path\": \"/home/ikeds/PycharmProjects/EnsemblePruneFH/venv/lib/python3.11/site-packages\",\n    \"settings.editor.selected.configurable\": \"com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable\"\n  }\n}]]></component>\n  <component name=\"RecentsManager\">\n    <key name=\"CopyFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/venv/lib/python3.11/site-packages\" />\n    </key>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"feef8468-869a-4805-9fc6-5b7cce196188\" name=\"Changes\" comment=\"\" />\n      <created>1722650478289</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1722650478289</updated>\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"cleaning files\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1722653485031</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1722653485031</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"cleaning files\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1722653744898</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1722653744898</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"3\" />\n    <servers />\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"cleaning files\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"cleaning files\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 22f45bc2a749b83522f34c20a18a45b89abed4d1)
++++ b/.idea/workspace.xml	(date 1724189061050)
+@@ -5,31 +5,10 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="cleaning files">
+-      <change afterPath="$PROJECT_DIR$/.idea/EPFH.iml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/static/__init__.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/static/base.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/static/epfh.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/static/oracle.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/static/single_best.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/static/stacked.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/static/static_selection.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/__init__.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/aggregation.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/datasets.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/dfp.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/diversity.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/diversity_batch.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/faiss_knn_wrapper.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/fuzzy_hyperbox.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/instance_hardness.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/knne.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/deslib/util/prob_functions.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/EPFH/examples/simple_example.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/EPFH/deslib/static/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/deslib/static/__init__.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/EPFH/deslib/static/epfh.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/deslib/static/epfh.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/EPFH/examples/simple_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/examples/simple_example.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -66,19 +45,21 @@
+     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+     "git-widget-placeholder": "master",
+     "ignore.virus.scanning.warn.message": "true",
+-    "last_opened_file_path": "/home/ikeds/PycharmProjects/EnsemblePruneFH/venv/lib/python3.11/site-packages",
++    "last_opened_file_path": "/home/ikeds/PycharmProjects/EnsemblePruneFH/venv/lib/python3.11/site-packages/deslib/static",
+     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+   }
+ }]]></component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
++      <recent name="$PROJECT_DIR$/venv/lib/python3.11/site-packages/deslib/static" />
++      <recent name="$PROJECT_DIR$/EPFH/deslib/static" />
+       <recent name="$PROJECT_DIR$/venv/lib/python3.11/site-packages" />
+     </key>
+   </component>
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82" />
++        <option value="bundled-python-sdk-ce3d9afa04ac-ba05f1cad1b1-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-242.20224.347" />
+       </set>
+     </attachedChunks>
+   </component>
