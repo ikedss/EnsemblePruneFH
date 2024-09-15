@@ -1,0 +1,48 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"feef8468-869a-4805-9fc6-5b7cce196188\" name=\"Changes\" comment=\"cleaning files\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/EPFH/deslib/static/__init__.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/__init__.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/EPFH/deslib/static/epfh.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/epfh.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/EPFH/examples/simple_example.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/EPFH/examples/simple_example.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;ikedss&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/ikedss/TCC.git&quot;,\r\n    &quot;accountId&quot;: &quot;5dbea843-d861-44e1-8cd8-2ecc59b6a91b&quot;\r\n  }\r\n}</component>\r\n  <component name=\"HighlightingSettingsPerFile\">\r\n    <setting file=\"file://$USER_HOME$/AppData/Local/Programs/Python/Python39/Lib/site-packages/deslib/static/epfh.py\" root0=\"SKIP_INSPECTION\" />\r\n    <setting file=\"file://$USER_HOME$/AppData/Local/Programs/Python/Python39/Lib/site-packages/deslib/util/fuzzy_hyperbox.py\" root0=\"SKIP_INSPECTION\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 3\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2k81dd3nB1DYFF32HKCBwSQkQ5V\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;Python.epfh.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.simple_example.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;master&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/ikeds/AppData/Local/Programs/Python/Python39/Lib/site-packages/deslib/static&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\ikeds\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages\\deslib\\static\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"feef8468-869a-4805-9fc6-5b7cce196188\" name=\"Changes\" comment=\"\" />\r\n      <created>1722650478289</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1722650478289</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1722653485031</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1722653485031</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1722653744898</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1722653744898</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1722654111075</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1722654111075</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"4\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"cleaning files\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"cleaning files\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision edab19efd12e7545afc126d95f75069911726ba7)
++++ b/.idea/workspace.xml	(date 1724611050370)
+@@ -4,12 +4,7 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="cleaning files">
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/EPFH/deslib/static/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/deslib/static/__init__.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/EPFH/deslib/static/epfh.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/deslib/static/epfh.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/EPFH/examples/simple_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/examples/simple_example.py" afterDir="false" />
+-    </list>
++    <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="New functions for EPFH and FH-DES added." />
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+@@ -99,11 +94,20 @@
+       <option name="project" value="LOCAL" />
+       <updated>1722654111075</updated>
+     </task>
+-    <option name="localTasksCounter" value="4" />
++    <task id="LOCAL-00004" summary="New functions for EPFH and FH-DES added.">
++      <option name="closed" value="true" />
++      <created>1724610847480</created>
++      <option name="number" value="00004" />
++      <option name="presentableId" value="LOCAL-00004" />
++      <option name="project" value="LOCAL" />
++      <updated>1724610847480</updated>
++    </task>
++    <option name="localTasksCounter" value="5" />
+     <servers />
+   </component>
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="cleaning files" />
+-    <option name="LAST_COMMIT_MESSAGE" value="cleaning files" />
++    <MESSAGE value="New functions for EPFH and FH-DES added." />
++    <option name="LAST_COMMIT_MESSAGE" value="New functions for EPFH and FH-DES added." />
+   </component>
+ </project>
+\ No newline at end of file

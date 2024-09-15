@@ -2,17 +2,13 @@ import numpy as np
 import pandas as pd
 from deslib.static.epfh import EnsemblePruneFH
 from deslib.static.des_fh import DESFH
-from deslib.static.static_selection import StaticSelection
-from deslib.static.stacked import StackedClassifier
-from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import BaggingClassifier
+from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier
 import time
 
 
 def clean_data(df):
-    df = df.fillna('ffill')
+    df = df.fillna(method='ffill')
     df = df.drop_duplicates()
     df.columns = df.columns.str.lower().str.replace(' ', '_')
     return df
@@ -23,7 +19,6 @@ def load_and_clean_data(urls):
     for url, name in urls:
         df = pd.read_csv(url)
         df = clean_data(df)
-        #print(df)
         df.attrs['source'] = name
         dataframes.append(df)
     return dataframes
@@ -34,23 +29,22 @@ urls = [
     ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/breast%2Bcancer%2Bwisconsin%2Bdiagnostic/wdbc.csv?raw=true', 'wdbc'),
     ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/connectionist%2Bbench%2Bsonar%2Bmines%2Bvs%2Brocks/sonar%20data.csv?raw=true', 'sonar'),
     ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/blood%2Btransfusion%2Bservice%2Bcenter/transfusion.data?raw=true', 'transfusion'),
-    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/monk%2Bs%2Bproblems/monk.csv?raw=true', 'monk')
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/adult/adult.csv?raw=true', 'adult'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/cardiotocography/CTG.csv?raw=true', 'cardiotocography'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/ecoli/ecoli.csv?raw=true', 'ecoli'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/glass%2Bidentification/glass.csv?raw=true', 'glass'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/haberman%2Bs%2Bsurvival/haberman.csv?raw=true', 'haberman'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/ilpd%2Bindian%2Bliver%2Bpatient%2Bdataset/Indian%20Liver%20Patient%20Dataset%20(ILPD).csv?raw=true', 'ilpd'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/ionosphere/ionosphere.csv?raw=true', 'ionosphere'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/liver%2Bdisorders/bupa-data.csv?raw=true', 'liver'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/magic%2Bgamma%2Btelescope/telescope_data.csv?raw=true', 'telescope'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/mammographic%2Bmass/mammographic_mass.csv?raw=true', 'mammographic_mass'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bgerman%2Bcredit%2Bdata/german_credit_data.csv?raw=true', 'german_credit'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bheart/statlog_heart.csv?raw=true', 'heart'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Blandsat%2Bsatellite/Sat.csv?raw=true', 'satellite'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bvehicle%2Bsilhouettes/vehicle.csv?raw=true', 'vehicle'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/vertebral%2Bcolumn/column_3C.xls?raw=true', 'vertebral_column'),
-    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/wine/wine.csv?raw=true', 'wine')
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/monk%2Bs%2Bproblems/monk.csv?raw=true', 'monk'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/adult/adult.csv?raw=true', 'adult'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/cardiotocography/CTG.csv?raw=true', 'cardiotocography'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/dermatology/derm.csv?raw=true', 'dermatology'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/glass%2Bidentification/glass.csv?raw=true', 'glass'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/haberman%2Bs%2Bsurvival/haberman.csv?raw=true', 'haberman'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/ilpd%2Bindian%2Bliver%2Bpatient%2Bdataset/Indian%20Liver%20Patient%20Dataset%20(ILPD).csv?raw=true', 'ilpd'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/ionosphere/ionosphere.csv?raw=true', 'ionosphere'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/magic%2Bgamma%2Btelescope/telescope_data.csv?raw=true', 'telescope'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/mammographic%2Bmass/mammographic_mass.csv?raw=true', 'mammographic_mass'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bgerman%2Bcredit%2Bdata/german_credit_data.csv?raw=true', 'german_credit'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bheart/statlog_heart.csv?raw=true', 'heart'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Blandsat%2Bsatellite/Sat.csv?raw=true', 'satellite'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bvehicle%2Bsilhouettes/vehicle.csv?raw=true', 'vehicle'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/vertebral%2Bcolumn/column_3C.csv?raw=true', 'vertebral_column'),
+    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/wine/wine.csv?raw=true', 'wine')
 ]
 
 dataframes = load_and_clean_data(urls)
@@ -59,7 +53,7 @@ dataframes = load_and_clean_data(urls)
 def select_x_y(df):
     target_column = None
     for col in df.columns:
-        if col.lower() in ['outcome', 'diagnosis', '60', 'donated_blood_in_march_2007', 'class', 'income', 'site', 'type', 'status', 'is_patient', 'column_ai', 'drinks', 'severity', 'risk', 'presence', 'label', 'target', 'wine']:
+        if col.lower() in ['outcome', 'diagnosis', '60', 'donated_blood_in_march_2007', 'class', 'income', 'site', 'type', 'status', 'is_patient', 'column_ai', 'severity', 'risk', 'presence', 'label', 'target', 'wine']:
             target_column = col
             break
     if target_column is None:
@@ -78,37 +72,38 @@ def process_datasets(dataframes, random_seed):
         X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.5, random_state=rng, stratify=y)
         X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=rng, stratify=y_temp)
 
-        classifiers = BaggingClassifier(n_estimators=50, random_state=rng)
-        startBaggingClassifier = time.time()
-        classifiers.fit(X_train, y_train)
-        endBaggingClassifier = time.time()
+        classifiers = {
+            'BaggingClassifier': BaggingClassifier(n_estimators=10, random_state=rng),
+            'RandomForestClassifier': RandomForestClassifier(n_estimators=10, random_state=rng),
+            'AdaBoostClassifier': AdaBoostClassifier(n_estimators=10, random_state=rng)
+        }
 
-        ss = StaticSelection(pool_classifiers=classifiers, random_state=rng)
-        startStaticSelection = time.time()
-        ss.fit(X_val, y_val)
-        endStaticSelection = time.time()
+        for name, clf in classifiers.items():
+            startClassifier = time.time()
+            clf.fit(X_train, y_train)
+            endClassifier = time.time()
 
-        des = DESFH(pool_classifiers=classifiers, random_state=rng)
-        startDESFH = time.time()
-        des.fit(X_val, y_val)
-        endDESFH = time.time()
+            des = DESFH(pool_classifiers=clf, random_state=rng)
+            startDESFH = time.time()
+            des.fit(X_val, y_val)
+            endDESFH = time.time()
 
-        fh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng, overlap_threshold=0, threshold_remove=0.01)
-        startPrune = time.time()
-        fh.fit(X_val, y_val)
-        endPrune = time.time()
+            fh = EnsemblePruneFH(pool_classifiers=clf, random_state=rng, overlap_threshold=0.01, threshold_remove=0.01)
+            startPrune = time.time()
+            fh.fit(X_val, y_val)
+            endPrune = time.time()
 
-        results.append({
-            'dataset': data.attrs['source'],
-            'BaggingClassifier_accuracy': classifiers.score(X_test, y_test),
-            'BaggingClassifier_time': endBaggingClassifier - startBaggingClassifier,
-            'StaticSelection_accuracy': ss.score(X_test, y_test),
-            'StaticSelection_time': endStaticSelection - startStaticSelection,
-            'DESFH_accuracy': des.score(X_test, y_test),
-            'DESFH_time': endDESFH - startDESFH,
-            'EnsemblePruneFH_accuracy': fh.score(X_test, y_test),
-            'EnsemblePruneFH_time': endPrune - startPrune
-        })
+            results.append({
+                'Run': seed_list.index(random_seed) + 1,
+                'Dataset': data.attrs['source'],
+                'Classifier': name,
+                'Classifier_accuracy': round(clf.score(X_test, y_test), 5),
+                'Classifier_time': round(endClassifier - startClassifier, 5),
+                'DESFH_accuracy': round(des.score(X_test, y_test), 5),
+                'DESFH_time': round(endDESFH - startDESFH, 5),
+                'EnsemblePruneFH_accuracy': round(fh.score(X_test, y_test), 5),
+                'EnsemblePruneFH_time': round(endPrune - startPrune, 5)
+            })
     return results
 
 
@@ -116,17 +111,7 @@ seed_list = [42, 78, 43, 81, 13, 73, 23, 64, 9, 54]
 all_results = []
 for seed in seed_list:
     results = process_datasets(dataframes, random_seed=seed)
-    all_results.append(results)
+    all_results.extend(results)
 
-for run, results in enumerate(all_results):
-    print(f"\nRun {run + 1}")
-    for result in results:
-        print(f"\nResults for dataset: {result['dataset']}")
-        print(f"BaggingClassifier accuracy: {result['BaggingClassifier_accuracy']}")
-        print(f"BaggingClassifier time: {result['BaggingClassifier_time']}")
-        print(f"StaticSelection accuracy: {result['StaticSelection_accuracy']}")
-        print(f"StaticSelection time: {result['StaticSelection_time']}")
-        print(f"DESFH accuracy: {result['DESFH_accuracy']}")
-        print(f"DESFH time: {result['DESFH_time']}")
-        print(f"EnsemblePruneFH accuracy: {result['EnsemblePruneFH_accuracy']}")
-        print(f"EnsemblePruneFH time: {result['EnsemblePruneFH_time']}")
+df_results = pd.DataFrame(all_results)
+df_results.to_csv('results.csv', index=False)

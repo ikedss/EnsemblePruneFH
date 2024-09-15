@@ -1,0 +1,148 @@
+Index: EPFH/examples/test.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import numpy as np\r\nimport pandas as pd\r\nfrom deslib.static.epfh import EnsemblePruneFH\r\nfrom deslib.static.des_fh import DESFH\r\nfrom deslib.static.static_selection import StaticSelection\r\nfrom deslib.static.stacked import StackedClassifier\r\nfrom sklearn.datasets import make_classification\r\nfrom sklearn.model_selection import train_test_split\r\nfrom sklearn.ensemble import RandomForestClassifier\r\nfrom sklearn.ensemble import BaggingClassifier\r\nimport time\r\n\r\n\r\ndef clean_data(df):\r\n    df = df.fillna(method='ffill')\r\n    df = df.drop_duplicates()\r\n    df.columns = df.columns.str.lower().str.replace(' ', '_')\r\n    return df\r\n\r\n\r\ndef load_and_clean_data(urls):\r\n    dataframes = []\r\n    for url, name in urls:\r\n        df = pd.read_csv(url)\r\n        df = clean_data(df)\r\n        df.attrs['source'] = name  # Store the dataset name in DataFrame attributes\r\n        dataframes.append(df)\r\n    return dataframes\r\n\r\n\r\nurls = [\r\n    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/pima.csv?raw=true', 'pima'),\r\n    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/breast%2Bcancer%2Bwisconsin%2Bdiagnostic/wdbc.csv?raw=true', 'wdbc'),\r\n    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/connectionist%2Bbench%2Bsonar%2Bmines%2Bvs%2Brocks/sonar%20data.csv?raw=true', 'sonar'),\r\n    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/blood%2Btransfusion%2Bservice%2Bcenter/transfusion.data?raw=true', 'transfusion'),\r\n    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/monk%2Bs%2Bproblems/monk.csv?raw=true', 'monk')\r\n]\r\n\r\ndataframes = load_and_clean_data(urls)\r\n\r\n\r\ndef select_x_y(df):\r\n    target_column = None\r\n    for col in df.columns:\r\n        if col.lower() in ['outcome', 'diagnosis', '60', 'donated_blood_in_march_2007', 'class']:\r\n            target_column = col\r\n            break\r\n    if target_column is None:\r\n        raise ValueError('No target column found')\r\n\r\n    X = df.drop(columns=[target_column]).values\r\n    y = df[target_column].astype('category').cat.codes.values\r\n    return X, y\r\n\r\n\r\ndef process_datasets(dataframes, random_seed):\r\n    results = []\r\n    rng = np.random.RandomState(random_seed)\r\n    for data in dataframes:\r\n        X, y = select_x_y(data)\r\n\r\n        X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.5, random_state=rng, stratify=y)\r\n        X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=rng, stratify=y_temp)\r\n\r\n        classifiers = BaggingClassifier(n_estimators=50, random_state=rng)\r\n        startBaggingClassifier = time.time()\r\n        classifiers.fit(X_train, y_train)\r\n        endBaggingClassifier = time.time()\r\n\r\n        ss = StaticSelection(pool_classifiers=classifiers, random_state=rng)\r\n        startStaticSelection = time.time()\r\n        ss.fit(X_val, y_val)\r\n        endStaticSelection = time.time()\r\n\r\n        des = DESFH(pool_classifiers=classifiers, random_state=rng)\r\n        startDESFH = time.time()\r\n        des.fit(X_val, y_val)\r\n        endDESFH = time.time()\r\n\r\n        fh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng, overlap_threshold=0, threshold_remove=1)\r\n        startPrune = time.time()\r\n        fh.fit(X_val, y_val)\r\n        endPrune = time.time()\r\n\r\n        results.append({\r\n            'dataset': data.attrs['source'],\r\n            'BaggingClassifier_accuracy': classifiers.score(X_test, y_test),\r\n            'BaggingClassifier_time': endBaggingClassifier - startBaggingClassifier,\r\n            'StaticSelection_accuracy': ss.score(X_test, y_test),\r\n            'StaticSelection_time': endStaticSelection - startStaticSelection,\r\n            'DESFH_accuracy': des.score(X_test, y_test),\r\n            'DESFH_time': endDESFH - startDESFH,\r\n            'EnsemblePruneFH_accuracy': fh.score(X_test, y_test),\r\n            'EnsemblePruneFH_time': endPrune - startPrune\r\n        })\r\n    return results\r\n\r\n\r\nseed_list = [42, 78, 43, 81, 13, 73, 23, 64, 9, 54]\r\nall_results = []\r\nfor seed in seed_list:\r\n    results = process_datasets(dataframes, random_seed=seed)\r\n    all_results.append(results)\r\n\r\nfor run, results in enumerate(all_results):\r\n    print(f\"\\nRun {run + 1}\")\r\n    for result in results:\r\n        print(f\"\\nResults for dataset: {result['dataset']}\")\r\n        print(f\"BaggingClassifier accuracy: {result['BaggingClassifier_accuracy']}\")\r\n        print(f\"BaggingClassifier time: {result['BaggingClassifier_time']}\")\r\n        print(f\"StaticSelection accuracy: {result['StaticSelection_accuracy']}\")\r\n        print(f\"StaticSelection time: {result['StaticSelection_time']}\")\r\n        print(f\"DESFH accuracy: {result['DESFH_accuracy']}\")\r\n        print(f\"DESFH time: {result['DESFH_time']}\")\r\n        print(f\"EnsemblePruneFH accuracy: {result['EnsemblePruneFH_accuracy']}\")\r\n        print(f\"EnsemblePruneFH time: {result['EnsemblePruneFH_time']}\")\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/EPFH/examples/test.py b/EPFH/examples/test.py
+--- a/EPFH/examples/test.py	(revision c7f22402d4654fdb77c258bdfc4c7c4fbb15038a)
++++ b/EPFH/examples/test.py	(date 1725994289604)
+@@ -12,7 +12,7 @@
+ 
+ 
+ def clean_data(df):
+-    df = df.fillna(method='ffill')
++    df = df.fillna('ffill')
+     df = df.drop_duplicates()
+     df.columns = df.columns.str.lower().str.replace(' ', '_')
+     return df
+@@ -23,17 +23,34 @@
+     for url, name in urls:
+         df = pd.read_csv(url)
+         df = clean_data(df)
+-        df.attrs['source'] = name  # Store the dataset name in DataFrame attributes
++        #print(df)
++        df.attrs['source'] = name
+         dataframes.append(df)
+     return dataframes
+ 
+ 
+ urls = [
+-    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/pima.csv?raw=true', 'pima'),
+-    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/breast%2Bcancer%2Bwisconsin%2Bdiagnostic/wdbc.csv?raw=true', 'wdbc'),
+-    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/connectionist%2Bbench%2Bsonar%2Bmines%2Bvs%2Brocks/sonar%20data.csv?raw=true', 'sonar'),
+-    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/blood%2Btransfusion%2Bservice%2Bcenter/transfusion.data?raw=true', 'transfusion'),
+-    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/monk%2Bs%2Bproblems/monk.csv?raw=true', 'monk')
++    ('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/pima.csv?raw=true', 'pima')
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/breast%2Bcancer%2Bwisconsin%2Bdiagnostic/wdbc.csv?raw=true', 'wdbc'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/connectionist%2Bbench%2Bsonar%2Bmines%2Bvs%2Brocks/sonar%20data.csv?raw=true', 'sonar'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/blood%2Btransfusion%2Bservice%2Bcenter/transfusion.data?raw=true', 'transfusion'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/monk%2Bs%2Bproblems/monk.csv?raw=true', 'monk'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/adult/adult.csv?raw=true', 'adult'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/cardiotocography/CTG.csv?raw=true', 'cardiotocography'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/ecoli/ecoli.csv?raw=true', 'ecoli'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/glass%2Bidentification/glass.csv?raw=true', 'glass'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/haberman%2Bs%2Bsurvival/haberman.csv?raw=true', 'haberman'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/ilpd%2Bindian%2Bliver%2Bpatient%2Bdataset/Indian%20Liver%20Patient%20Dataset%20(ILPD).csv?raw=true', 'ilpd'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/ionosphere/ionosphere.csv?raw=true', 'ionosphere'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/liver%2Bdisorders/bupa-data.csv?raw=true', 'liver'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/magic%2Bgamma%2Btelescope/telescope_data.csv?raw=true', 'telescope'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/mammographic%2Bmass/mammographic_mass.csv?raw=true', 'mammographic_mass'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bgerman%2Bcredit%2Bdata/german_credit_data.csv?raw=true', 'german_credit'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bheart/statlog_heart.csv?raw=true', 'heart'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Blandsat%2Bsatellite/Sat.csv?raw=true', 'satellite'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/statlog%2Bvehicle%2Bsilhouettes/vehicle.csv?raw=true', 'vehicle'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/vertebral%2Bcolumn/column_3C.xls?raw=true', 'vertebral_column'),
++    #('https://github.com/ikedss/EnsemblePruneFH/blob/master/Bases/wine/wine.csv?raw=true', 'wine')
+ ]
+ 
+ dataframes = load_and_clean_data(urls)
+@@ -42,12 +59,11 @@
+ def select_x_y(df):
+     target_column = None
+     for col in df.columns:
+-        if col.lower() in ['outcome', 'diagnosis', '60', 'donated_blood_in_march_2007', 'class']:
++        if col.lower() in ['outcome', 'diagnosis', '60', 'donated_blood_in_march_2007', 'class', 'income', 'site', 'type', 'status', 'is_patient', 'column_ai', 'drinks', 'severity', 'risk', 'presence', 'label', 'target', 'wine']:
+             target_column = col
+             break
+     if target_column is None:
+         raise ValueError('No target column found')
+-
+     X = df.drop(columns=[target_column]).values
+     y = df[target_column].astype('category').cat.codes.values
+     return X, y
+@@ -77,7 +93,7 @@
+         des.fit(X_val, y_val)
+         endDESFH = time.time()
+ 
+-        fh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng, overlap_threshold=0, threshold_remove=1)
++        fh = EnsemblePruneFH(pool_classifiers=classifiers, random_state=rng, overlap_threshold=0, threshold_remove=0.0001)
+         startPrune = time.time()
+         fh.fit(X_val, y_val)
+         endPrune = time.time()
+@@ -113,4 +129,4 @@
+         print(f"DESFH accuracy: {result['DESFH_accuracy']}")
+         print(f"DESFH time: {result['DESFH_time']}")
+         print(f"EnsemblePruneFH accuracy: {result['EnsemblePruneFH_accuracy']}")
+-        print(f"EnsemblePruneFH time: {result['EnsemblePruneFH_time']}")
++        print(f"EnsemblePruneFH time: {result['EnsemblePruneFH_time']}")
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"feef8468-869a-4805-9fc6-5b7cce196188\" name=\"Changes\" comment=\"5 datasets to test and script running 10 times with different seeds\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/EPFH/deslib/static/epfh.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/EPFH/deslib/static/epfh.py\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/EPFH/examples/test.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/EPFH/examples/test.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;ikedss&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/ikedss/EnsemblePruneFH.git&quot;,\r\n    &quot;accountId&quot;: &quot;6264a094-315a-4196-88e0-3e6fc70ed72a&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 3\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2k81dd3nB1DYFF32HKCBwSQkQ5V\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;Python.simple_example.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.test.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;master&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;/home/ikeds/PycharmProjects/EnsemblePruneFH/venv/lib/python3.11/site-packages&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"$PROJECT_DIR$/venv/lib/python3.11/site-packages\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"feef8468-869a-4805-9fc6-5b7cce196188\" name=\"Changes\" comment=\"\" />\r\n      <created>1722650478289</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1722650478289</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1722653485031</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1722653485031</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1722653744898</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1722653744898</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1724613055699</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1724613055699</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"5 datasets to test and script running 10 times with different seeds\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1725235473101</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1725235473101</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"5\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"New functions for EPFH and FH-DES added.\" />\r\n    <MESSAGE value=\"cleaning files\" />\r\n    <MESSAGE value=\"5 datasets to test and script running 10 times with different seeds\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"5 datasets to test and script running 10 times with different seeds\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision c7f22402d4654fdb77c258bdfc4c7c4fbb15038a)
++++ b/.idea/workspace.xml	(date 1725932652640)
+@@ -4,9 +4,8 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="5 datasets to test and script running 10 times with different seeds">
++    <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="Small Update">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/EPFH/deslib/static/epfh.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/deslib/static/epfh.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/EPFH/examples/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/examples/test.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+@@ -109,13 +108,33 @@
+       <option name="project" value="LOCAL" />
+       <updated>1725235473101</updated>
+     </task>
+-    <option name="localTasksCounter" value="5" />
++    <task id="LOCAL-00005" summary="Small Update">
++      <option name="closed" value="true" />
++      <created>1725289213606</created>
++      <option name="number" value="00005" />
++      <option name="presentableId" value="LOCAL-00005" />
++      <option name="project" value="LOCAL" />
++      <updated>1725289213606</updated>
++    </task>
++    <option name="localTasksCounter" value="6" />
+     <servers />
+   </component>
++  <component name="Vcs.Log.Tabs.Properties">
++    <option name="TAB_STATES">
++      <map>
++        <entry key="MAIN">
++          <value>
++            <State />
++          </value>
++        </entry>
++      </map>
++    </option>
++  </component>
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="New functions for EPFH and FH-DES added." />
+     <MESSAGE value="cleaning files" />
+     <MESSAGE value="5 datasets to test and script running 10 times with different seeds" />
+-    <option name="LAST_COMMIT_MESSAGE" value="5 datasets to test and script running 10 times with different seeds" />
++    <MESSAGE value="Small Update" />
++    <option name="LAST_COMMIT_MESSAGE" value="Small Update" />
+   </component>
+ </project>
+\ No newline at end of file
