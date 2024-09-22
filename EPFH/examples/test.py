@@ -4,12 +4,13 @@ from deslib.static.epfh import EnsemblePruneFH
 from deslib.static.des_fh import DESFH
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier
+from sklearn.preprocessing import MinMaxScaler
 import time
+from joblib import Parallel, delayed
 
 
 def clean_data(df):
-    df = df.fillna(method='ffill')
-    df = df.drop_duplicates()
+    df = df.fillna(method='ffill').drop_duplicates()
     df.columns = df.columns.str.lower().str.replace(' ', '_')
     return df
 
@@ -63,55 +64,56 @@ def select_x_y(df):
     return X, y
 
 
-def process_datasets(dataframes, random_seed):
+def process_dataset(data, random_seed):
     results = []
+    X, y = select_x_y(data)
     rng = np.random.RandomState(random_seed)
-    for data in dataframes:
-        X, y = select_x_y(data)
 
-        X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.5, random_state=rng, stratify=y)
-        X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=rng, stratify=y_temp)
+    scaler = MinMaxScaler()
+    X = scaler.fit_transform(X)
 
-        classifiers = {
-            'BaggingClassifier': BaggingClassifier(n_estimators=10, random_state=rng),
-            'RandomForestClassifier': RandomForestClassifier(n_estimators=10, random_state=rng),
-            'AdaBoostClassifier': AdaBoostClassifier(n_estimators=10, random_state=rng)
-        }
+    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.5, random_state=rng, stratify=y)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=rng, stratify=y_temp)
 
-        for name, clf in classifiers.items():
-            startClassifier = time.time()
-            clf.fit(X_train, y_train)
-            endClassifier = time.time()
+    classifiers = {
+        'BaggingClassifier': BaggingClassifier(n_estimators=10, random_state=rng),
+        'RandomForestClassifier': RandomForestClassifier(n_estimators=10, random_state=rng),
+        'AdaBoostClassifier': AdaBoostClassifier(n_estimators=10, random_state=rng)
+    }
 
-            des = DESFH(pool_classifiers=clf, random_state=rng)
-            startDESFH = time.time()
-            des.fit(X_val, y_val)
-            endDESFH = time.time()
+    for name, clf in classifiers.items():
+        startClassifier = time.time()
+        clf.fit(X_train, y_train)
+        endClassifier = time.time()
 
-            fh = EnsemblePruneFH(pool_classifiers=clf, random_state=rng, overlap_threshold=0.01, threshold_remove=0.01)
-            startPrune = time.time()
-            fh.fit(X_val, y_val)
-            endPrune = time.time()
+        des = DESFH(pool_classifiers=clf, random_state=rng)
+        startDESFH = time.time()
+        des.fit(X_val, y_val)
+        endDESFH = time.time()
 
-            results.append({
-                'Run': seed_list.index(random_seed) + 1,
-                'Dataset': data.attrs['source'],
-                'Classifier': name,
-                'Classifier_accuracy': round(clf.score(X_test, y_test), 5),
-                'Classifier_time': round(endClassifier - startClassifier, 5),
-                'DESFH_accuracy': round(des.score(X_test, y_test), 5),
-                'DESFH_time': round(endDESFH - startDESFH, 5),
-                'EnsemblePruneFH_accuracy': round(fh.score(X_test, y_test), 5),
-                'EnsemblePruneFH_time': round(endPrune - startPrune, 5)
-            })
+        fh = EnsemblePruneFH(pool_classifiers=clf, random_state=rng, overlap_threshold=0.01, threshold_remove=0.01)
+        startPrune = time.time()
+        fh.fit(X_val, y_val)
+        endPrune = time.time()
+
+        results.append({
+            'Run': seed_list.index(random_seed) + 1,
+            'Dataset': data.attrs['source'],
+            'Classifier': name,
+            'Classifier_accuracy': round(clf.score(X_test, y_test), 5),
+            'Classifier_time': round(endClassifier - startClassifier, 5),
+            'DESFH_accuracy': round(des.score(X_test, y_test), 5),
+            'DESFH_time': round(endDESFH - startDESFH, 5),
+            'EnsemblePruneFH_accuracy': round(fh.score(X_test, y_test), 5),
+            'EnsemblePruneFH_time': round(endPrune - startPrune, 5),
+            'Number_of_hyperboxes': fh.NO_hypeboxes,
+            'Ensemble_members_removed': len(clf.estimators_) - len(fh.pool_classifiers)
+        })
     return results
 
 
 seed_list = [42, 78, 43, 81, 13, 73, 23, 64, 9, 54]
-all_results = []
-for seed in seed_list:
-    results = process_datasets(dataframes, random_seed=seed)
-    all_results.extend(results)
+all_results = Parallel(n_jobs=-1)(delayed(process_dataset)(data, seed) for seed in seed_list for data in dataframes)
 
-df_results = pd.DataFrame(all_results)
+df_results = pd.DataFrame([result for sublist in all_results for result in sublist])
 df_results.to_csv('results.csv', index=False)
