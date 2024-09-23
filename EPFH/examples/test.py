@@ -69,11 +69,13 @@ def process_dataset(data, random_seed):
     X, y = select_x_y(data)
     rng = np.random.RandomState(random_seed)
 
-    scaler = MinMaxScaler()
-    X = scaler.fit_transform(X)
-
     X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.5, random_state=rng, stratify=y)
     X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=rng, stratify=y_temp)
+
+    scaler = MinMaxScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_val = scaler.transform(X_val)
+    X_test = scaler.transform(X_test)
 
     classifiers = {
         'BaggingClassifier': BaggingClassifier(n_estimators=10, random_state=rng),
