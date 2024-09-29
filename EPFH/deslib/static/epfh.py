@@ -93,6 +93,4 @@ class EnsemblePruneFH(BaseStaticEnsemble):
 
     def predict(self, X):
         predictions = np.asarray([clf.predict(X) for clf in self.pool_classifiers])
-        predictions = predictions.astype(int)
-        majority_vote = np.apply_along_axis(lambda x: np.bincount(x).argmax(), axis=0, arr=predictions)
-        return majority_vote
+        return np.apply_along_axis(lambda x: np.bincount(x.astype(int)).argmax(), axis=0, arr=predictions)

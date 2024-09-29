@@ -1,0 +1,67 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"feef8468-869a-4805-9fc6-5b7cce196188\" name=\"Changes\" comment=\"Minor changes\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_09_2024_18_15_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_09_2024_18_15__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_09_2024_12_58_[Changes]/shelved.patch\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_09_2024_12_58__Changes_.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/EPFH/examples/test.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/EPFH/examples/test.py\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;ikedss&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/ikedss/EnsemblePruneFH.git&quot;,\r\n    &quot;accountId&quot;: &quot;6264a094-315a-4196-88e0-3e6fc70ed72a&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 3\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2k81dd3nB1DYFF32HKCBwSQkQ5V\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;Python.simple_example.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.test.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;master&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;/home/ikeds/PycharmProjects/EnsemblePruneFH/venv/lib/python3.11/site-packages&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"$PROJECT_DIR$/venv/lib/python3.11/site-packages\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-python-sdk-975db3bf15a3-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.18034.82\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"feef8468-869a-4805-9fc6-5b7cce196188\" name=\"Changes\" comment=\"\" />\r\n      <created>1722650478289</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1722650478289</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1722653485031</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1722653485031</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1722653744898</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1722653744898</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"cleaning files\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1724613055699</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1724613055699</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"5 datasets to test and script running 10 times with different seeds\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1725235473101</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1725235473101</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"The results are now saved in a CSV file\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1726374553371</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1726374553371</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Minor changes\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1726374902013</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1726374902013</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"7\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"UnknownFeatures\">\r\n    <option featureType=\"com.intellij.fileTypeFactory\" implementationName=\"*.csv\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"New functions for EPFH and FH-DES added.\" />\r\n    <MESSAGE value=\"cleaning files\" />\r\n    <MESSAGE value=\"5 datasets to test and script running 10 times with different seeds\" />\r\n    <MESSAGE value=\"The results are now saved in a CSV file\" />\r\n    <MESSAGE value=\"Minor changes\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Minor changes\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision c2b6419c8f2e469f3fe4088b438f52f98e391f6d)
++++ b/.idea/workspace.xml	(date 1727054405900)
+@@ -4,13 +4,8 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="Minor changes">
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_09_2024_18_15_[Changes]/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_09_2024_18_15__Changes_.xml" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_09_2024_12_58_[Changes]/shelved.patch" beforeDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_11_09_2024_12_58__Changes_.xml" beforeDir="false" />
++    <list default="true" id="feef8468-869a-4805-9fc6-5b7cce196188" name="Changes" comment="Performance increased">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/EPFH/examples/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/EPFH/examples/test.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -55,12 +50,13 @@
+     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+-    &quot;last_opened_file_path&quot;: &quot;/home/ikeds/PycharmProjects/EnsemblePruneFH/venv/lib/python3.11/site-packages&quot;,
++    &quot;last_opened_file_path&quot;: &quot;C:/Users/ikeds/PycharmProjects/EPFH/EPFH/examples&quot;,
+     &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
+   }
+ }</component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
++      <recent name="C:\Users\ikeds\PycharmProjects\EPFH\EPFH\examples" />
+       <recent name="$PROJECT_DIR$/venv/lib/python3.11/site-packages" />
+     </key>
+   </component>
+@@ -128,7 +124,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1726374902013</updated>
+     </task>
+-    <option name="localTasksCounter" value="7" />
++    <task id="LOCAL-00007" summary="Performance increased">
++      <option name="closed" value="true" />
++      <created>1726975548925</created>
++      <option name="number" value="00007" />
++      <option name="presentableId" value="LOCAL-00007" />
++      <option name="project" value="LOCAL" />
++      <updated>1726975548925</updated>
++    </task>
++    <option name="localTasksCounter" value="8" />
+     <servers />
+   </component>
+   <component name="UnknownFeatures">
+@@ -151,6 +155,7 @@
+     <MESSAGE value="5 datasets to test and script running 10 times with different seeds" />
+     <MESSAGE value="The results are now saved in a CSV file" />
+     <MESSAGE value="Minor changes" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Minor changes" />
++    <MESSAGE value="Performance increased" />
++    <option name="LAST_COMMIT_MESSAGE" value="Performance increased" />
+   </component>
+ </project>
+\ No newline at end of file

@@ -10,7 +10,7 @@ from joblib import Parallel, delayed
 
 
 def clean_data(df):
-    df = df.fillna(method='ffill').drop_duplicates()
+    df = df.fillna('ffill').drop_duplicates()
     df.columns = df.columns.str.lower().str.replace(' ', '_')
     return df
 
@@ -64,7 +64,7 @@ def select_x_y(df):
     return X, y
 
 
-def process_dataset(data, random_seed):
+def process_dataset(data, random_seed, n_estimators, overlap_threshold, threshold_remove):
     results = []
     X, y = select_x_y(data)
     rng = np.random.RandomState(random_seed)
@@ -78,9 +78,9 @@ def process_dataset(data, random_seed):
     X_test = scaler.transform(X_test)
 
     classifiers = {
-        'BaggingClassifier': BaggingClassifier(n_estimators=10, random_state=rng),
-        'RandomForestClassifier': RandomForestClassifier(n_estimators=10, random_state=rng),
-        'AdaBoostClassifier': AdaBoostClassifier(n_estimators=10, random_state=rng)
+        'BaggingClassifier': BaggingClassifier(n_estimators=n_estimators, random_state=rng),
+        'RandomForestClassifier': RandomForestClassifier(n_estimators=n_estimators, random_state=rng),
+        'AdaBoostClassifier': AdaBoostClassifier(n_estimators=n_estimators, random_state=rng)
     }
 
     for name, clf in classifiers.items():
@@ -93,7 +93,7 @@ def process_dataset(data, random_seed):
         des.fit(X_val, y_val)
         endDESFH = time.time()
 
-        fh = EnsemblePruneFH(pool_classifiers=clf, random_state=rng, overlap_threshold=0.01, threshold_remove=0.01)
+        fh = EnsemblePruneFH(pool_classifiers=clf, random_state=rng, overlap_threshold=overlap_threshold, threshold_remove=threshold_remove)
         startPrune = time.time()
         fh.fit(X_val, y_val)
         endPrune = time.time()
@@ -109,13 +109,29 @@ def process_dataset(data, random_seed):
             'EnsemblePruneFH_accuracy': round(fh.score(X_test, y_test), 5),
             'EnsemblePruneFH_time': round(endPrune - startPrune, 5),
             'Number_of_hyperboxes': fh.NO_hypeboxes,
-            'Ensemble_members_removed': len(clf.estimators_) - len(fh.pool_classifiers)
+            'Ensemble_members_removed': len(clf.estimators_) - len(fh.pool_classifiers),
+            'n_estimators': n_estimators,
+            'overlap_threshold': overlap_threshold,
+            'threshold_remove': threshold_remove
         })
     return results
 
 
 seed_list = [42, 78, 43, 81, 13, 73, 23, 64, 9, 54]
-all_results = Parallel(n_jobs=-1)(delayed(process_dataset)(data, seed) for seed in seed_list for data in dataframes)
+n_estimators_list = [10, 50, 100]
+overlap_threshold_list = [0.01, 0.05, 0.1]
+threshold_remove_list = [0.01, 0.05, 0.1]
 
-df_results = pd.DataFrame([result for sublist in all_results for result in sublist])
+all_results = []
+
+for n_estimators in n_estimators_list:
+    for overlap_threshold in overlap_threshold_list:
+        for threshold_remove in threshold_remove_list:
+            results = Parallel(n_jobs=-1)(
+                delayed(process_dataset)(data, seed, n_estimators, overlap_threshold, threshold_remove)
+                for seed in seed_list for data in dataframes
+            )
+            all_results.extend([result for sublist in results for result in sublist])
+
+df_results = pd.DataFrame(all_results)
 df_results.to_csv('results.csv', index=False)
