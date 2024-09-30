@@ -10,7 +10,7 @@ from joblib import Parallel, delayed
 
 
 def clean_data(df):
-    df = df.fillna('ffill').drop_duplicates()
+    df = df.fillna(method='ffill').drop_duplicates()
     df.columns = df.columns.str.lower().str.replace(' ', '_')
     return df
 
